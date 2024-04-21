@@ -1,6 +1,8 @@
 import express from "express";
 import url from "url";
 import path from "path";
+import http from "http";
+import { Server } from "socket.io"
 
 const app = express();
 const porta = process.env.porta || 3000;
@@ -11,4 +13,12 @@ const diretorioPublico = path.join(caminhoAtual, "../../", "public");
 //lendo os arquivos de public de forma estática
 app.use(express.static(diretorioPublico));
 
-app.listen(porta, () =>  console.log(`Servidor escutando na porta ${porta}`))
+const servidorHttp = http.createServer(app);
+
+servidorHttp.listen(porta, () =>  console.log(`Servidor escutando na porta ${porta}`));
+
+const io = new Server(servidorHttp);
+
+io.on("connection", () => {
+  console.log("Um cliente se conectou!");
+})
